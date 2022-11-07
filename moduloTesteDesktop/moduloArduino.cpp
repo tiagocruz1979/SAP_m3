@@ -4,10 +4,11 @@
 //#include <Wire.h>
 //#include <LiquidCrystal_I2C.h>
 //Definições
+
 #include <iostream>
 #include <string>
 #include <ctime>
-
+#include <fstream>
 typedef int byte;
 
 void atualizaDisplay(double);
@@ -185,6 +186,8 @@ public:
 
 };
 
+std::string arquivoTeste = "teste.txt";
+std::ofstream resultado(arquivoTeste);
 
 class SerialCom
 {
@@ -198,6 +201,18 @@ public:
     void write(std::string str)
     {
         std::cout << "Saida Serial > " << str;
+        if(!resultado.is_open())
+            resultado.open(arquivoTeste,std::ios::app);
+
+        if(resultado.is_open())
+        {
+            resultado << str;
+        }
+        else
+        {
+            std::cout << "Erro ao acessar arquivo" << std::endl;
+        }
+        resultado.close();
     }
     void write(String Str)
     {
@@ -229,7 +244,7 @@ LiquidCrystal_I2C lcd(endereco, colunas, linhas); // instancia objeto
   Ultrasonic ultrasonic(pino_trigger, pino_echo);
 
 // Constantes Gerais;
-  const int intervalo = 10000; // intervalo de tempo entre cada leitura e envio ao banco de dados.
+  const int intervalo = 1000; // intervalo de tempo entre cada leitura e envio ao banco de dados.
   //const int pinLED_Atividade = 6;
 
 class Pluviometro
@@ -382,7 +397,7 @@ digitalWrite(portaLEDPluv,LOW);
 digitalWrite(portaLEDVazao,LOW);
 
 sei();
-delay(10000);
+delay(intervalo);
 
 
     int aleatorio;
@@ -412,9 +427,6 @@ vazao.reiniciaPulsos();
 //volume utilizado do reservatório
 double VolumeReservatorio = reservatorio.getVolume();
 
-//if((vazaoLitrosMinuto > 0.0 || chuva > 0.0 || LeituraAnteriorVazao>0.0 || LeituraAnteriorChuva > 0 || VolumeReservatorio!=LeituraAnteriorReservatorio) )
-//{
-
   // exemplo de SQL de insersao de dados : INSERT INTO projetopi.coletaDados (chuva,vazao,nivelR1) VALUES (99.0,98.0,97.99)";
 
   String str_SQL;
@@ -432,12 +444,6 @@ double VolumeReservatorio = reservatorio.getVolume();
 
   Serial.write(str_SQL.c_str());
 
-  // variaveis para controle de envio com a opção de enviar ao bd somente quando tiver dados atualizados
-  //LeituraAnteriorVazao = vazaoLitrosMinuto;
-  //LeituraAnteriorChuva = chuva;
-  //LeituraAnteriorReservatorio = VolumeReservatorio;
-
-//}
 }
 
 
@@ -483,7 +489,7 @@ int main()
     srand(time(NULL));
 
     setup();
-    for(int i = 0 ; i < 1 ; i++)
+    for(int i = 0 ; i < 5 ; i++)
     {
         loop();
     }

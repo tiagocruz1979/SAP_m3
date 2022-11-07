@@ -1,0 +1,5 @@
+INSERT INTO projetopi.coletaDados (chuva,vazao,nivelR1) VALUES(26.699400,31.200000,1.749600)
+INSERT INTO projetopi.coletaDados (chuva,vazao,nivelR1) VALUES(19.853400,26.400000,1.458000)
+INSERT INTO projetopi.coletaDados (chuva,vazao,nivelR1) VALUES(2.053800,21.600000,1.458000)
+INSERT INTO projetopi.coletaDados (chuva,vazao,nivelR1) VALUES(18.826500,98.400000,1.458000)
+INSERT INTO projetopi.coletaDados (chuva,vazao,nivelR1) VALUES(11.980500,93.600000,1.458000)

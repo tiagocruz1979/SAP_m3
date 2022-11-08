@@ -1,1 +1,1 @@
-g++ -o moduloArduino.exe moduloArduino.cpp
+g++ -o moduloArduino.exe moduloArduino.cpp 

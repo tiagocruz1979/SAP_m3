@@ -1,4 +1,3 @@
-
 // Display de Cristal Líquido
 // INCLUSÃO DE BIBLIOTECAS
 //#include <Wire.h>
@@ -9,6 +8,7 @@
 #include <string>
 #include <ctime>
 #include <fstream>
+#include <regex>
 typedef int byte;
 
 void atualizaDisplay(double);
@@ -484,6 +484,40 @@ void contaPulsoVazao()
   }
 }
 
+
+bool testeArqSaida(std::string arquivo)
+{
+    bool resultado = true;
+    std::ifstream entrada;
+    std::string sql;
+    std::regex rx("INSERT INTO projetopi.coletaDados \\(chuva,vazao,nivelR1\\) VALUES\\([0-9]+.[0-9]+,[0-9]+.[0-9]+,[0-9]+.[0-9]+\\)");
+    entrada.open(arquivo,std::ios::in);
+
+    std::cout << "\nIniciando teste do arquivo de saida" << std::endl;
+    if(entrada.is_open())
+    {
+        while(!entrada.eof())
+        {
+            getline(entrada,sql);
+            if(sql=="") break;
+            std::cout << "Saida: " << sql << "...";
+
+            if(std::regex_match(sql,rx))
+            {
+                std::cout << "[OK]" << std::endl;
+            }
+            else
+            {
+                std::cout << "[FALHOU]" << std::endl;
+                resultado = false;
+            }
+        }
+    }
+    return resultado;
+
+}
+
+
 int main()
 {
     srand(time(NULL));
@@ -492,6 +526,15 @@ int main()
     for(int i = 0 ; i < 5 ; i++)
     {
         loop();
+    }
+
+    if(testeArqSaida(arquivoTeste))
+    {
+        std::cout << "Concluido sem falhas" << std::endl;
+    }
+    else
+    {
+        std::cout << "Concluido com falhas" << std::endl;
     }
 
     return 0;

@@ -24,8 +24,8 @@ LiquidCrystal_I2C lcd(endereco, colunas, linhas); // instancia objeto
   Ultrasonic ultrasonic(pino_trigger, pino_echo);
 
 // Constantes Gerais;
-  const int intervalo = 20000; // intervalo de tempo entre cada leitura e envio ao banco de dados. 
-  const int pinLED_Atividade = 6;
+  const unsigned int intervalo = 20000; // intervalo de tempo entre cada leitura e envio ao banco de dados. 
+  //const int pinLED_Atividade = 6;
 
 class Pluviometro
 {
@@ -58,7 +58,7 @@ class SensorVazao
 {
 private:
   volatile int contaPulsos;
-  double fatorConversaoPulsoLitro = 0.002; // conversão do sensor de vazao em pulsos = litros
+  double fatorConversaoPulsoLitro; // conversão do sensor de vazao em pulsos = litros
   int intervaloTempoMiliSeg;
   
 public:
@@ -84,7 +84,7 @@ public:
     return getVolume_litros() * 60000 / this->intervaloTempoMiliSeg;
   }
 
-}; SensorVazao vazao(0.02, intervalo);
+}; SensorVazao vazao(0.002, intervalo);
 
 
 class Reservatorio
@@ -162,7 +162,7 @@ class Reservatorio
    attachInterrupt(digitalPinToInterrupt(portaVazao), contaPulsoVazao,RISING);
 
    // LED de atividade
-   pinMode(pinLED_Atividade,OUTPUT);
+   //pinMode(pinLED_Atividade,OUTPUT);
  }
 
 // variaveis de controle para a opção de enviar ao banco de dados somente quando há novos dados atualizados
@@ -172,7 +172,7 @@ double LeituraAnteriorReservatorio = 0.0;
 
 void loop() {
 
-digitalWrite(pinLED_Atividade,LOW);
+//digitalWrite(pinLED_Atividade,LOW);
 digitalWrite(portaLEDPluv,LOW);
 digitalWrite(portaLEDVazao,LOW);
 
@@ -180,7 +180,7 @@ sei();
   delay(intervalo);
 cli();
 
-digitalWrite(pinLED_Atividade,HIGH);
+//digitalWrite(pinLED_Atividade,HIGH);
 
 //calcula o volume de chuva em mm no período;
 double chuva = pluv.getChuva_mm();
@@ -193,7 +193,11 @@ vazao.reiniciaPulsos();
 //volume utilizado do reservatório
 double VolumeReservatorio = reservatorio.getVolume();
 
- 
+//if((vazaoLitrosMinuto > 0.0 || chuva > 0.0 || LeituraAnteriorVazao>0.0 || LeituraAnteriorChuva > 0 || VolumeReservatorio!=LeituraAnteriorReservatorio) )
+//{
+
+  // exemplo de SQL de insersao de dados : INSERT INTO projetopi.coletaDados (chuva,vazao,nivelR1) VALUES (99.0,98.0,97.99)";
+  
   String str_SQL;
   str_SQL  = "INSERT INTO projetopi.coletaDados (chuva,vazao,nivelR1) VALUES(";
   str_SQL += String(chuva);
@@ -203,8 +207,18 @@ double VolumeReservatorio = reservatorio.getVolume();
   str_SQL += String(VolumeReservatorio);
   str_SQL += ")\n";
   
-  Serial.write(str_SQL.c_str());
+  
+  //str_SQL = "";
+  //str_SQL = "INSERT INTO projetopi.coletaDados (chuva,vazao,nivelR1) VALUES(55.55,66.66,77.77)\n";
 
+  Serial.write(str_SQL.c_str());
+ 
+  // variaveis para controle de envio com a opção de enviar ao bd somente quando tiver dados atualizados
+  //LeituraAnteriorVazao = vazaoLitrosMinuto;
+  //LeituraAnteriorChuva = chuva;
+  //LeituraAnteriorReservatorio = VolumeReservatorio;
+
+//}
 }
 
 
